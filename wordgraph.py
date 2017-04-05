@@ -1,6 +1,6 @@
 #This class is copied verbatim from here: http://www.python-course.eu/graphs_python.php
 #Only addition is a get_shortest_path method which uses breadth first search figure out the shortest path
-
+import sys
 from collections import deque
 
 class Graph(object):
@@ -89,11 +89,41 @@ class Graph(object):
                     vertex_queue.append(node)
 
         return None
-                
 
-        
-        
-        
+    def get_shortest_paths(self, start_vertex, end_vertex): 
+        vertex_queue = deque([[start_vertex]])
+        marked = [] #list of marked vertices
+
+        paths = [] #store all the paths
+        graph = self.__graph_dict #just the stored graph
+
+        pathlen = -1
+
+        while len(vertex_queue) > 0:
+            #pop first vertex off the queue
+            
+            current = vertex_queue.popleft()
+
+            #if end condition reached
+            if current[0] == end_vertex:
+                #build the path list up
+                if pathlen == -1:
+                    pathlen = len(current)
+                    paths += [current]
+                elif len(current) < pathlen:
+                    pathlen = len(current)
+                    paths = [current]
+                elif len(current) == pathlen:
+                    paths += [current]
+            
+            for node in graph[current[0]]:
+                if node not in marked: 
+                    #Don't mark the target vertex or it'll quit after the first valid path                   
+                    if node != end_vertex:
+                        marked.append(node)
+                    vertex_queue.append([node] + current)
+
+        return paths
 
     def find_path(self, start_vertex, end_vertex, path=None):
         """ find a path from start_vertex to end_vertex 

@@ -4,10 +4,12 @@ import sys
 import pickle
 import os.path
 from wordgraph import Graph
+from wordladderdata import LadderData
 
 class WordLadder(object):
-    WEBSTER_LOCATION = "websters-dictionary.txt"
-    SOWPODS_LOCATION = "sowpods.txt"
+    RESOURCE_LOCATION = "resources/"
+    WEBSTER_LOCATION = RESOURCE_LOCATION + "websters-dictionary.txt"
+    SOWPODS_LOCATION = RESOURCE_LOCATION + "sowpods.txt"
     WEBSTER = "webster"
     SOWPODS = "sowpods"
     FILE_END = "gra.ph"
@@ -16,10 +18,7 @@ class WordLadder(object):
     file_suffix = SOWPODS + FILE_END
     
     def __init__(self, use_webster):
-        """ initializes a graph object 
-            If no dictionary or None is given, 
-            an empty dictionary will be used
-        """
+        #Initialises the word ladder object, taking a boolean as a parameter to decide the dictionary to use
         if use_webster == None:
             use_webster = False
         self.use_webster = use_webster
@@ -77,7 +76,7 @@ class WordLadder(object):
         
                     
         #show that the program did something
-        path = graph.get_shortest_path(start, end)
+        path = graph.get_shortest_path(start, end)        
         print path
 
     #returns true if the two words differ by exactly one letter
@@ -94,7 +93,7 @@ class WordLadder(object):
 
     def save_graph(self, x):
         graph = self.build_graph(self.get_word_list(x))
-        filename = str(x) + self.file_suffix
+        filename = self.RESOURCE_LOCATION + str(x) + self.file_suffix
         with open(filename, 'wb') as output:
             pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL) 
 
@@ -103,7 +102,7 @@ class WordLadder(object):
             save_graph(x) 
 
     def load_graph(self, word_length):
-        filename = str(word_length) + self.file_suffix
+        filename = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
         with open(filename, 'rb') as input:
             graph = pickle.load(input)
 
@@ -122,7 +121,7 @@ class WordLadder(object):
         return graph
 
     def get_graph(self, word_length):
-        fname = str(word_length) + self.file_suffix
+        fname = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
         if not os.path.isfile(fname):
             self.save_graph(word_length)
         return self.load_graph(word_length)
@@ -134,3 +133,39 @@ class WordLadder(object):
             if self.is_one_away(word, neighbour):
                 neighbour_list.append(neighbour)
         return neighbour_list
+
+    def get_ladder_data(self, word):
+        fname = 'words/' + word + self.file_suffix
+        if not os.path.isfile(fname):
+            self.build_ladder_data(word)        
+        data = self.load_ladder_data(word)
+        
+        return data
+
+    def load_ladder_data(self, word):
+        filename = 'words/' + word + self.file_suffix
+        with open(filename, 'rb') as input:
+            data = pickle.load(input)
+
+        return data
+
+    def build_ladder_data(self, word):
+        wordlist = self.get_word_list(len(word))
+        graph = Graph(self.get_graph(len(word)))
+        data = LadderData(word)
+
+        count = 0
+        for target in wordlist:
+            if word == target:
+                continue
+            count = count + 1
+            sys.stdout.write("\r" + str(count) + " out of " + str(len(wordlist)) + " paths done: " + word + " to " + target)
+            sys.stdout.flush()   
+            path = graph.get_shortest_path(word, target)
+            data.add_path(path)
+
+        filename = word + self.file_suffix
+
+        with open('words/' + filename, 'wb') as output:
+            pickle.dump(data, output, pickle.HIGHEST_PROTOCOL) 
+        return data
