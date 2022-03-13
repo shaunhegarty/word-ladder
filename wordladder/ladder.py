@@ -4,8 +4,8 @@ import sys
 import pickle
 import os.path
 import logging
-from wordgraph import Graph
-from wordladderdata import LadderData
+from graph import Graph
+from ladderdata import LadderData
 
 logger = logging.getLogger(__name__)
 

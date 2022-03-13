@@ -1,4 +1,4 @@
 [MASTER]
-init-hook='import sys; sys.path.append("/workspaces/word-ladder/")'
+init-hook='import sys; sys.path.append("/workspaces/word-ladder/wordladder")'
 disable=
     C0114, C0115, C0116, R0903

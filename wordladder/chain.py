@@ -4,8 +4,8 @@
 
 import sys
 import logging
-from wordgraph import Graph
-from wordladder import WordLadder
+from graph import Graph
+from ladder import WordLadder
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
