@@ -3,8 +3,11 @@
 import sys
 import pickle
 import os.path
+import logging
 from wordgraph import Graph
 from wordladderdata import LadderData
+
+logger = logging.getLogger(__name__)
 
 
 class WordLadder(object):
@@ -27,22 +30,23 @@ class WordLadder(object):
 
         if use_webster:
             self.file_suffix = self.WEBSTER + self.FILE_END
-            print(self.file_suffix)
+            logger.info(self.file_suffix)
 
-    def get_word_list(self, word_length):
+    def get_word_list(self, word_length, include_proper_nouns=False):
         dictionaryPath = self.SOWPODS_LOCATION
         if self.use_webster:
             dictionaryPath = self.WEBSTER_LOCATION
 
         # Read the words of the correct length from the dictionary and add
-        # them to a list
+        # them to a list. Exclude proper nouns
         with open(dictionaryPath, "r") as dictionary:
             wordlist = []
             for line in dictionary:
                 line = line.strip()
-                if len(line) == word_length:
+                if len(line) == word_length and (
+                    include_proper_nouns or line.lower() == line
+                ):
                     wordlist.append(line)
-
         return wordlist
 
     def get_ladder(self, start, end):
@@ -50,7 +54,7 @@ class WordLadder(object):
         start = start.strip().lower()
         end = end.strip().lower()
         if len(start) != len(end):
-            print("Arguments must be two words of the same length")
+            logger.error("Arguments must be two words of the same length")
             return
 
         # Read the words of the correct length from the dictionary and add them to a list
@@ -59,14 +63,14 @@ class WordLadder(object):
 
         # show that the program did something
         path = graph.get_shortest_path(start, end)
-        print(path)
+        logger.info(path)
 
     def get_ladder_from_scratch(self, start, end):
 
         start = start.strip().lower()
         end = end.strip().lower()
         if len(start) != len(end):
-            print("Arguments must be two words of the same length")
+            logger.error("Arguments must be two words of the same length")
             return
 
         # Read the words of the correct length from the dictionary and add them to a list
@@ -76,7 +80,8 @@ class WordLadder(object):
 
         # show that the program did something
         path = graph.get_shortest_path(start, end)
-        print(path)
+        logging.info(path)
+        return path
 
     # returns true if the two words differ by exactly one letter
     def is_one_away(self, a, b):
@@ -115,9 +120,7 @@ class WordLadder(object):
             graph[word] = self.get_neighbour_list(word, wordlist)
             count = count + 1
             if count % 10 == 0:
-                sys.stdout.write(
-                    "\r" + str(count) + " out of " + str(len(wordlist)) + " nodes done"
-                )
+                sys.stdout.write(f"\r{count} out of {len(wordlist)} nodes done")
                 sys.stdout.flush()
         return graph
 
@@ -160,7 +163,9 @@ class WordLadder(object):
             if word == target:
                 continue
             count = count + 1
-            sys.stdout.write(f"\r{count} out of {len(wordlist)} paths done: {word} to {target}")
+            sys.stdout.write(
+                f"\r{count} out of {len(wordlist)} paths done: {word} to {target}"
+            )
             sys.stdout.flush()
             path = graph.get_shortest_path(word, target)
             data.add_path(path)

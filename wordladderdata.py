@@ -1,4 +1,7 @@
 """ This class will store the wordladder data for a given word """
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LadderData(object):
@@ -17,7 +20,7 @@ class LadderData(object):
             return
 
         if path[0] != self.base_word:
-            print("Invalid path entered")
+            logger.error("Invalid path entered")
             return
         # add path as data entry, with end word as the key
         datakey = path[len(path) - 1]

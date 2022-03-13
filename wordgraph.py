@@ -2,7 +2,9 @@
 
 Only addition is a get_shortest_path method which uses breadth first search figure out the shortest path"""
 
+import logging
 from collections import deque
+logger = logging.getLogger(__name__)
 
 
 class Graph(object):
@@ -171,7 +173,7 @@ class Graph(object):
 
         # for each vertex connected to the current vertex
         for vertex in graph[start_vertex]:
-            print("/r starting with " + vertex)
+            logger.info(f"/r starting with {vertex}")
             # go to next vertex if it's not part of the path
             if vertex not in path:
                 # recursively follow through until the end is reached
