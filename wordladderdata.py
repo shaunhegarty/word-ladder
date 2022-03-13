@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LadderData(object):
+class LadderData:
 
     base_word = ""
 

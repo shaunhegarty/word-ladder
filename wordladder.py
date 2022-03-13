@@ -10,7 +10,7 @@ from wordladderdata import LadderData
 logger = logging.getLogger(__name__)
 
 
-class WordLadder(object):
+class WordLadder:
     RESOURCE_LOCATION = "resources/"
     WEBSTER_LOCATION = RESOURCE_LOCATION + "websters-dictionary.txt"
     SOWPODS_LOCATION = RESOURCE_LOCATION + "sowpods.txt"
@@ -33,13 +33,13 @@ class WordLadder(object):
             logger.info(self.file_suffix)
 
     def get_word_list(self, word_length, include_proper_nouns=False):
-        dictionaryPath = self.SOWPODS_LOCATION
+        dictionary_path = self.SOWPODS_LOCATION
         if self.use_webster:
-            dictionaryPath = self.WEBSTER_LOCATION
+            dictionary_path = self.WEBSTER_LOCATION
 
         # Read the words of the correct length from the dictionary and add
         # them to a list. Exclude proper nouns
-        with open(dictionaryPath, "r") as dictionary:
+        with open(dictionary_path, "r", encoding="utf-8") as dictionary:
             wordlist = []
             for line in dictionary:
                 line = line.strip()
@@ -58,8 +58,7 @@ class WordLadder(object):
             return
 
         # Read the words of the correct length from the dictionary and add them to a list
-        g = self.get_graph(len(start))
-        graph = Graph(g)
+        graph = Graph(self.get_graph(len(start)))
 
         # show that the program did something
         path = graph.get_shortest_path(start, end)
@@ -69,9 +68,7 @@ class WordLadder(object):
 
         start = start.strip().lower()
         end = end.strip().lower()
-        if len(start) != len(end):
-            logger.error("Arguments must be two words of the same length")
-            return
+        assert len(start) != len(end), "Arguments must be two words of the same length"
 
         # Read the words of the correct length from the dictionary and add them to a list
         word_length = len(start)
@@ -83,32 +80,36 @@ class WordLadder(object):
         logging.info(path)
         return path
 
-    # returns true if the two words differ by exactly one letter
-    def is_one_away(self, a, b):
-        return self.get_distance(a, b) == 1
+    def is_one_away(self, first_word: str, second_word: str):
+        """returns true if the two words differ by exactly one letter"""
+        return self.get_distance(first_word, second_word) == 1
 
-    # Get the letter distance between the two words
-    def get_distance(self, a, b):
+    @staticmethod
+    def get_distance(first_word: str, second_word: str):
+        """Get the letter distance between the two words"""
         diff_count = 0
-        for x in range(0, len(a)):  # a and b should be same length at this point
-            if a[x : x + 1] != b[x : x + 1]:
+        # both words should be same length at this point
+        for index in range(0, len(first_word)):
+            if first_word[index : index + 1] != second_word[index : index + 1]:
                 diff_count = diff_count + 1
         return diff_count
 
-    def save_graph(self, x):
-        graph = self.build_graph(self.get_word_list(x))
-        filename = self.RESOURCE_LOCATION + str(x) + self.file_suffix
+    def save_graph(self, word_length: int):
+        graph = self.build_graph(self.get_word_list(word_length))
+        filename = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
         with open(filename, "wb") as output:
             pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
 
     def save_graphs(self):
-        for x in range(2, 8):
-            self.save_graph(x)
+        min_word_length = 2
+        max_word_length = 8
+        for word_length in range(min_word_length, max_word_length):
+            self.save_graph(word_length)
 
     def load_graph(self, word_length):
         filename = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
-        with open(filename, "rb") as input:
-            graph = pickle.load(input)
+        with open(filename, "rb") as input_file:
+            graph = pickle.load(input_file)
 
         return graph
 
@@ -148,8 +149,8 @@ class WordLadder(object):
 
     def load_ladder_data(self, word):
         filename = "words/" + word + self.file_suffix
-        with open(filename, "rb") as input:
-            data = pickle.load(input)
+        with open(filename, "rb") as input_file:
+            data = pickle.load(input_file)
 
         return data
 

@@ -1,13 +1,15 @@
 """ This class is copied verbatim from here: http://www.python-course.eu/graphs_python.php
 
-Only addition is a get_shortest_path method which uses breadth first search figure out the shortest path"""
+Only addition is a get_shortest_path method which uses breadth first search figure out the
+shortest path"""
 
 import logging
 from collections import deque
+
 logger = logging.getLogger(__name__)
 
 
-class Graph(object):
+class Graph:
     def __init__(self, graph_dict=None):
         """initializes a graph object
         If no dictionary or None is given,
@@ -155,9 +157,10 @@ class Graph(object):
                     return extended_path
         return None
 
-    def find_all_paths(self, start_vertex, end_vertex, path=[]):
+    def find_all_paths(self, start_vertex, end_vertex, path=None):
         """find all paths from start_vertex to
         end_vertex in graph"""
+        path = path or []
         # graph is map of nodes
         graph = self.__graph_dict
         # add current vertex to path
@@ -173,12 +176,12 @@ class Graph(object):
 
         # for each vertex connected to the current vertex
         for vertex in graph[start_vertex]:
-            logger.info(f"/r starting with {vertex}")
+            logger.info("/r starting with %s", vertex)
             # go to next vertex if it's not part of the path
             if vertex not in path:
                 # recursively follow through until the end is reached
                 extended_paths = self.find_all_paths(vertex, end_vertex, path)
                 # find each path
-                for p in extended_paths:
-                    paths.append(p)
+                for epath in extended_paths:
+                    paths.append(epath)
         return paths
