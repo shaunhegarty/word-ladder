@@ -13,7 +13,8 @@
 	"settings": {},
 	
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": []
+	"extensions": ["eamodio.gitlens", "ms-toolsai.jupyter", "ms-toolsai.jupyter-renderers", 
+		"ms-python.vscode-pylance", "ms-python.python", "jithurjacob.nbpreviewer"]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
