@@ -22,8 +22,7 @@ def main():
         for path in paths:
             print(f"{path}")
     except KeyError:
-        logger.error('One or both words are not in the dictionary')
-
+        logger.error("One or both words are not in the dictionary")
 
 
 if __name__ == "__main__":

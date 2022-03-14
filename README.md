@@ -5,7 +5,7 @@ Nothing original here just a learning project.
 
 ## Basic Run:
 Run wordchain.py with two parameters, a starting word and a target word. For example: 
-> python wordchain.py song bird
+> python chain.py song bird
 
 Returns:
 > ['bird', 'bind', 'bing', 'bong', 'song']
@@ -23,3 +23,11 @@ SOWPODS is a fairly generous dictionary and includes lots of words that are neve
 The Merriam Webster word list is a bit dated which is a feature since it excludes any very new words. 
 
 The common word list is the set which is common to all three lists. 
+
+## Building Ladder JSON
+> python builder.py word_length [top_n_words_by_frequency to use, default=100]
+
+e.g.:
+> `python builder.py 3 50 ` 
+
+The purpose of the top n argument is to limit the duration of the run,and also to keep the results interesting. Finding paths between two unused words isn't terribly fun. 
