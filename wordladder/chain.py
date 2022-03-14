@@ -17,9 +17,13 @@ def main():
     ladder = WordLadder()
     # ladder.get_ladder(sys.argv[1],sys.argv[2])
     graph = Graph(ladder.get_graph(len(sys.argv[1])))
-    paths = graph.get_shortest_paths(sys.argv[1], sys.argv[2])
-    for path in paths:
-        print(f"{path}")
+    try:
+        paths = graph.get_shortest_paths(sys.argv[1], sys.argv[2])
+        for path in paths:
+            print(f"{path}")
+    except KeyError:
+        logger.error('One or both words are not in the dictionary')
+
 
 
 if __name__ == "__main__":
