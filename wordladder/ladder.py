@@ -4,49 +4,67 @@ import sys
 import pickle
 import os.path
 import logging
+import csv
+import string
+
+from dataclasses import dataclass
+
 from graph import Graph
 from ladderdata import LadderData
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class WordList:
+    """Class for word lists"""
+
+    name: str
+    filename: str
+    resource_location: str = "resources/"
+    is_csv: bool = False
+
+    @property
+    def location(self) -> str:
+        return os.path.join(self.resource_location, self.filename)
+
+    @property
+    def file_suffix(self) -> str:
+        return f"{self.name}gra.ph"
+
+    def __str__(self):
+        return f"{self.name}: {self.filename}"
+
+
 class WordLadder:
-    RESOURCE_LOCATION = "resources/"
-    WEBSTER_LOCATION = RESOURCE_LOCATION + "websters-dictionary.txt"
-    SOWPODS_LOCATION = RESOURCE_LOCATION + "sowpods.txt"
-    WEBSTER = "webster"
-    SOWPODS = "sowpods"
-    FILE_END = "gra.ph"
+    WORDLISTS = {
+        "sowpods": WordList("sowpods", "sowpods.txt"),
+        "webster": WordList("webster", "websters-dictionary.txt"),
+        "common": WordList("common", "common.frequency.csv", is_csv=True),
+    }
 
-    use_webster = 1
-    file_suffix = SOWPODS + FILE_END
-
-    def __init__(self, use_webster):
+    def __init__(self, word_list="common"):
         """Initialises the word ladder object, taking a boolean as a parameter
         to decide the dictionary to use"""
-        if use_webster is None:
-            use_webster = False
-        self.use_webster = use_webster
-
-        if use_webster:
-            self.file_suffix = self.WEBSTER + self.FILE_END
-            logger.info(self.file_suffix)
+        self.dictionary = WordLadder.WORDLISTS.get(word_list)
 
     def get_word_list(self, word_length, include_proper_nouns=False):
-        dictionary_path = self.SOWPODS_LOCATION
-        if self.use_webster:
-            dictionary_path = self.WEBSTER_LOCATION
+        dictionary_path = self.dictionary.location
 
         # Read the words of the correct length from the dictionary and add
         # them to a list. Exclude proper nouns
         with open(dictionary_path, "r", encoding="utf-8") as dictionary:
-            wordlist = []
-            for line in dictionary:
-                line = line.strip()
-                if len(line) == word_length and (
-                    include_proper_nouns or line.lower() == line
-                ):
-                    wordlist.append(line)
+            if self.dictionary.is_csv:
+                reader = csv.reader(dictionary, delimiter=" ")
+                wordlist = {word for word, _ in reader if len(word) == word_length}
+            else:
+                wordlist = set()
+                for line in dictionary:
+                    line = line.strip()
+                    if len(line) == word_length and (
+                        include_proper_nouns or line.lower() == line
+                    ):
+                        wordlist.add(line)
         return wordlist
 
     def get_ladder(self, start, end):
@@ -68,7 +86,9 @@ class WordLadder:
 
         start = start.strip().lower()
         end = end.strip().lower()
-        assert len(start) != len(end), "Arguments must be two words of the same length"
+        assert len(start) == len(
+            end
+        ), f"Arguments must be two words of the same length: {start}, {end} "
 
         # Read the words of the correct length from the dictionary and add them to a list
         word_length = len(start)
@@ -96,7 +116,7 @@ class WordLadder:
 
     def save_graph(self, word_length: int):
         graph = self.build_graph(self.get_word_list(word_length))
-        filename = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
+        filename = f"{self.dictionary.resource_location}{word_length}{self.dictionary.file_suffix}"
         with open(filename, "wb") as output:
             pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
 
@@ -107,7 +127,7 @@ class WordLadder:
             self.save_graph(word_length)
 
     def load_graph(self, word_length):
-        filename = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
+        filename = f"{self.dictionary.resource_location}{word_length}{self.dictionary.file_suffix}"
         with open(filename, "rb") as input_file:
             graph = pickle.load(input_file)
 
@@ -126,21 +146,24 @@ class WordLadder:
         return graph
 
     def get_graph(self, word_length):
-        fname = self.RESOURCE_LOCATION + str(word_length) + self.file_suffix
-        if not os.path.isfile(fname):
+        filename = f"{self.dictionary.resource_location}{word_length}{self.dictionary.file_suffix}"
+        if not os.path.isfile(filename):
             self.save_graph(word_length)
         return self.load_graph(word_length)
 
     # get list of neighbours
     def get_neighbour_list(self, word, wordlist):
-        neighbour_list = []
-        for neighbour in wordlist:
-            if self.is_one_away(word, neighbour):
-                neighbour_list.append(neighbour)
-        return neighbour_list
+        neighbour_list = set()
+        for index in range(len(word)):
+            for letter in string.ascii_lowercase:
+                neighbour_word = word[:index] + letter + word[index + 1 :]
+                if neighbour_word in wordlist:
+                    neighbour_list.add(neighbour_word)
+        neighbour_list.remove(word)
+        return list(neighbour_list)
 
     def get_ladder_data(self, word):
-        fname = "words/" + word + self.file_suffix
+        fname = "words/" + word + self.dictionary.file_suffix
         if not os.path.isfile(fname):
             self.build_ladder_data(word)
         data = self.load_ladder_data(word)
@@ -148,7 +171,7 @@ class WordLadder:
         return data
 
     def load_ladder_data(self, word):
-        filename = "words/" + word + self.file_suffix
+        filename = "words/" + word + self.dictionary.file_suffix
         with open(filename, "rb") as input_file:
             data = pickle.load(input_file)
 
@@ -171,7 +194,7 @@ class WordLadder:
             path = graph.get_shortest_path(word, target)
             data.add_path(path)
 
-        filename = word + self.file_suffix
+        filename = word + self.dictionary.file_suffix
 
         with open("words/" + filename, "wb") as output:
             pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
