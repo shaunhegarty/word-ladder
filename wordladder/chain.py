@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" Takes two words as arguments and finds the shortest path between them"""
+"""Takes two words as arguments and finds the shortest path between them"""
 
 import sys
 import logging

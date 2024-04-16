@@ -1,11 +1,11 @@
-""" This class will store the wordladder data for a given word """
+"""This class will store the wordladder data for a given word"""
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class LadderData:
-
     base_word = ""
 
     # word_data should be filled with paths that exist between

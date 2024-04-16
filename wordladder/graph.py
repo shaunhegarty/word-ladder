@@ -1,4 +1,4 @@
-""" This class is copied verbatim from here: http://www.python-course.eu/graphs_python.php
+"""This class is copied verbatim from here: http://www.python-course.eu/graphs_python.php
 
 Only addition is a get_shortest_path method which uses breadth first search figure out the
 shortest path"""

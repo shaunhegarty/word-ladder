@@ -78,4 +78,6 @@ if __name__ == "__main__":
     assert sys.argv[1] is not None
     input_word_length = int(sys.argv[1])
     top_n_words = int(sys.argv[2]) if len(sys.argv) >= 3 else 100
-    LadderJsonBuilder(word_length=input_word_length, top_n=top_n_words).build_ladder_json()
+    LadderJsonBuilder(
+        word_length=input_word_length, top_n=top_n_words
+    ).build_ladder_json()

@@ -68,7 +68,6 @@ class WordLadder:
         return wordlist
 
     def get_ladder(self, start, end):
-
         start = start.strip().lower()
         end = end.strip().lower()
         if len(start) != len(end):
@@ -83,7 +82,6 @@ class WordLadder:
         logger.info(path)
 
     def get_ladder_from_scratch(self, start, end):
-
         start = start.strip().lower()
         end = end.strip().lower()
         assert len(start) == len(
