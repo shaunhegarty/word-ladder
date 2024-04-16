@@ -22,7 +22,7 @@ numpy==1.26.4
 packaging==23.2
 parso==0.8.3
 pexpect==4.9.0
-pillow==10.2.0
+pillow==10.3.0
 platformdirs==4.2.0
 prompt-toolkit==3.0.43
 ptyprocess==0.7.0
@@ -34,7 +34,7 @@ pygraphviz==1.12
 pyparsing==3.1.1
 python-dateutil==2.8.2
 pyzmq==25.1.2
-ruff==0.2.2
+ruff==0.3.7
 scipy==1.12.0
 six==1.16.0
 stack-data==0.6.3
