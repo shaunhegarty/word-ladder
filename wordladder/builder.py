@@ -1,10 +1,18 @@
 import csv
-import sys
 import json
+import logging
+import sys
+
 import networkx as nx
+from ladder import WordLadder
 from networkx import NetworkXNoPath
 
-from ladder import WordLadder
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 
 class LadderJsonBuilder:
@@ -60,10 +68,12 @@ class LadderJsonBuilder:
             except NetworkXNoPath:
                 pass
             if count % 1000 == 0:
-                sys.stdout.write(
-                    f"\r{count} out of {total} pairs done. Found {len(wordladders.keys())} paths"
+                logger.info(
+                    "%d out of %d pairs done. Found %s paths",
+                    count,
+                    total,
+                    len(wordladders.keys()),
                 )
-                sys.stdout.flush()
         return wordladders
 
     def write_to_json(self, wordladders):
