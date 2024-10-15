@@ -25,9 +25,14 @@ The Merriam Webster word list is a bit dated which is a feature since it exclude
 The common word list is the set which is common to all three lists. 
 
 ## Building Ladder JSON
-> python builder.py word_length [top_n_words_by_frequency to use, default=100]
+Call the ladder builder like this:
+> python builder.py [word_length] [top_n_words_by_frequency to use, default=100]
 
-e.g.:
-> `python builder.py 3 50 ` 
+Example:
+```bash
+cd wordladder
+
+python builder.py 3 50
+```
 
 The purpose of the top n argument is to limit the duration of the run,and also to keep the results interesting. Finding paths between two unused words isn't terribly fun. 

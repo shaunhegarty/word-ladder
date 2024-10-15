@@ -1,9 +1,0 @@
-FROM python:3.10.2-bullseye
-
-RUN apt-get update && apt-get install python3-dev graphviz libgraphviz-dev pkg-config
-RUN pip install --upgrade pip
-
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
