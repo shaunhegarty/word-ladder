@@ -32,7 +32,28 @@ Example:
 ```bash
 cd wordladder
 
+# produce a json file containing the word map for the top 50 3-letter words
 python builder.py 3 50
-```
 
+# then get word ladders
+python chain.py the way
+>>> ['way', 'why', 'thy', 'the']
+>>> ['way', 'tay', 'thy', 'the']
+>>> ['way', 'wae', 'tae', 'the']
+
+python chain.py art war
+>>> ['war', 'wat', 'oat', 'ort', 'art']
+>>> ['war', 'oar', 'oat', 'ort', 'art']
+>>> ['war', 'way', 'wry', 'ary', 'art']
+
+python chain.py ape man
+>>> ['man', 'mae', 'tae', 'tye', 'aye', 'ape']
+>>> ['man', 'tan', 'tae', 'tye', 'aye', 'ape']
+>>> ['man', 'wan', 'wyn', 'wye', 'aye', 'ape']
+>>> ['man', 'dan', 'dae', 'dye', 'aye', 'ape']
+>>> ['man', 'nan', 'nae', 'nye', 'aye', 'ape']
+>>> ['man', 'mat', 'oat', 'opt', 'ope', 'ape']
+>>> ['man', 'mal', 'aal', 'awl', 'awe', 'ape']
+
+```
 The purpose of the top n argument is to limit the duration of the run,and also to keep the results interesting. Finding paths between two unused words isn't terribly fun. 
